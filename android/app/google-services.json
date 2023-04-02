@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "858885795407",
+    "project_id": "photo-fit-user-cc222",
+    "storage_bucket": "photo-fit-user-cc222.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:858885795407:android:1cf5a4ea2407d1a678c43a",
+        "android_client_info": {
+          "package_name": "com.example.photo_fit_user"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "858885795407-ds6g6hp47hinkpbhvqh6sibdu9faumfc.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCnOyJyiQp72Lo21ie4Y47HSe05Jp7pR5I"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "858885795407-ds6g6hp47hinkpbhvqh6sibdu9faumfc.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
