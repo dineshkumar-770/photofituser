@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:photo_fit_user/common_widgets/clickable_text_button.dart';
-import 'package:photo_fit_user/common_widgets/custom_textoform_field.dart';
 import 'package:photo_fit_user/common_widgets/flutter_toast.dart';
 import 'package:photo_fit_user/common_widgets/gap.dart';
 import 'package:photo_fit_user/common_widgets/horizontal_gap.dart';
@@ -14,8 +13,6 @@ import 'package:photo_fit_user/constants/app_text_style.dart';
 import 'package:photo_fit_user/constants/image_path.dart';
 import 'package:photo_fit_user/features/authentication/cubit/authentication_cubit.dart';
 import 'package:photo_fit_user/features/authentication/widgets/custom_text_field.dart';
-import 'package:photo_fit_user/features/navigation_bar/screen/navbar.dart';
-import 'package:photo_fit_user/features/user_details/widgets/form_textfield.dart';
 import 'package:photo_fit_user/routes/named_routes.dart';
 
 class LoginScreen extends StatefulWidget {
