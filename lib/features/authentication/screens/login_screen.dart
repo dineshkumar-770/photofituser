@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:photo_fit_user/common_widgets/clickable_text_button.dart';
-import 'package:photo_fit_user/common_widgets/flutter_toast.dart';
 import 'package:photo_fit_user/common_widgets/gap.dart';
 import 'package:photo_fit_user/common_widgets/horizontal_gap.dart';
 import 'package:photo_fit_user/common_widgets/loading_animation.dart';
@@ -11,7 +11,8 @@ import 'package:photo_fit_user/config/utils/helper_validation.dart';
 import 'package:photo_fit_user/constants/app_color.dart';
 import 'package:photo_fit_user/constants/app_text_style.dart';
 import 'package:photo_fit_user/constants/image_path.dart';
-import 'package:photo_fit_user/features/authentication/cubit/authentication_cubit.dart';
+import 'package:photo_fit_user/features/authentication/controller/auth_notifier.dart';
+import 'package:photo_fit_user/features/authentication/controller/auth_states.dart';
 import 'package:photo_fit_user/features/authentication/widgets/custom_text_field.dart';
 import 'package:photo_fit_user/routes/named_routes.dart';
 
@@ -26,12 +27,10 @@ class _LoginScreenState extends State<LoginScreen> {
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  late AuthenticationCubit authenticationCubit;
 
   @override
   void initState() {
     super.initState();
-    authenticationCubit = BlocProvider.of<AuthenticationCubit>(context);
   }
 
   @override
@@ -64,7 +63,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     NormalCustomTextField(
                       controller: emailController,
                       label: 'Email',
-                      hint: 'enter your email',
+                      hint: 'Enter your email',
                       isPasswordField: false,
                       validator: (value) {
                         if (value!.isEmpty) {
@@ -83,7 +82,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     NormalCustomTextField(
                       controller: passwordController,
                       label: 'Password',
-                      hint: 'enter your password',
+                      hint: 'Enter your password',
                       isPasswordField: true,
                       validator: (value) {
                         if (value!.isEmpty) {
@@ -96,18 +95,19 @@ class _LoginScreenState extends State<LoginScreen> {
                     SizedBox(
                       height: 20 * SizeConfig.heightMultiplier!,
                     ),
-                    BlocConsumer<AuthenticationCubit, AuthenticationState>(
-                      listener: (context, state) {
-                        if (state is LoginSuccessfullState) {
-                          Navigator.pushReplacementNamed(
-                              context, RoutesName.rootScreen);
-                        }
-                        if (state is LoginErrorState) {
-                          Toast.showToast(state.errorMessage);
-                        }
-                      },
-                      builder: (context, state) {
-                        if (state is LoginLoadingState) {
+                    Consumer(
+                      builder: (context, ref, child) {
+                        final state = ref.watch(authProvider);
+                        ref.listen(authProvider, (previous, next) {
+                          if (next is SignInSuccessState) {
+                            Navigator.pushReplacementNamed(
+                                context, RoutesName.rootScreen);
+                          }
+                          if (next is SignInErrorState) {
+                            Fluttertoast.showToast(msg: next.errorMessage);
+                          }
+                        });
+                        if (state is SignInLoadingState) {
                           return SizedBox(
                             height: 45 * SizeConfig.heightMultiplier!,
                             width: double.infinity,
@@ -128,17 +128,21 @@ class _LoginScreenState extends State<LoginScreen> {
                             height: 45 * SizeConfig.heightMultiplier!,
                             width: double.infinity,
                             child: ElevatedButton(
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: AppColors.kPrimaryOrange,
-                                ),
-                                onPressed: () {
-                                  if (_formKey.currentState!.validate()) {
-                                    authenticationCubit.userSignIn(
-                                        email: emailController.text.trim(),
-                                        password: passwordController.text);
-                                  }
-                                },
-                                child: const Text('Sign In')),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: AppColors.kPrimaryOrange,
+                              ),
+                              onPressed: () {
+                                if (_formKey.currentState!.validate()) {
+                                  ref.read(authProvider.notifier).signIn(
+                                      email: emailController.text,
+                                      password: passwordController.text);
+                                }
+                              },
+                              child: SizedBox(
+                                  height: 45 * SizeConfig.heightMultiplier!,
+                                  width: double.infinity,
+                                  child: const Center(child: Text('Sign In'))),
+                            ),
                           );
                         }
                       },
@@ -148,16 +152,19 @@ class _LoginScreenState extends State<LoginScreen> {
                       thickness: 1.5,
                     ),
                     const Gap(height: 15),
-                    BlocConsumer<AuthenticationCubit, AuthenticationState>(
-                      listener: (context, state) {
-                        if (state is GoogleSignInSuccessState) {
-                          Navigator.pushReplacementNamed(
-                              context, RoutesName.rootScreen);
-                        } else if (state is GoogleSignInErrorState) {
-                          Toast.showToast(state.errorMessage);
-                        }
-                      },
-                      builder: (context, state) {
+                    Consumer(
+                      builder: (context, ref, child) {
+                        final state = ref.watch(authProvider);
+                        ref.listen(authProvider, (previous, next) {
+                          if (next is GoogleSignInSuccessState) {
+                            Navigator.pushReplacementNamed(
+                                context, RoutesName.rootScreen);
+                          }
+                          if (next is GoogleSignInErrorState) {
+                            Fluttertoast.showToast(
+                                msg: 'Google Sign in cancelled by User');
+                          }
+                        });
                         if (state is GoogleSignInLoadingState) {
                           return SizedBox(
                             height: 45 * SizeConfig.heightMultiplier!,
@@ -183,7 +190,9 @@ class _LoginScreenState extends State<LoginScreen> {
                                 backgroundColor: AppColors.kPrimaryOrange,
                               ),
                               onPressed: () {
-                                authenticationCubit.signInWithGoogle();
+                                ref
+                                    .read(authProvider.notifier)
+                                    .signInWithGoogle();
                               },
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.center,

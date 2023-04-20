@@ -1,5 +1,4 @@
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
+import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:photo_fit_user/config/responsive/size_config.dart';
 

@@ -1,5 +1,5 @@
 const String userToken = 'uid';
-const String googleToken = 'googleToken';
+
 
 class AssetImagePath {
   static const String frameOne = 'assets/frames/frame_one.png';
