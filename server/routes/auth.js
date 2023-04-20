@@ -21,7 +21,7 @@ authRouter.post('/api/signup',async (req, res)=>{
     const existingUser = await User.findOne({email});
 
     if(existingUser){
-        return res.status(400).json({msg: "User already exist"});
+        return res.status(400).json({error: "User already exist with this email"});
     }
 
     //hashing or encrypting password
@@ -34,7 +34,7 @@ authRouter.post('/api/signup',async (req, res)=>{
     });
 
     user = await user.save();
-    res.json({message: "Signup successful, kindly login!"});
+    res.status(200).json({message: "Signup successful, kindly login!"});
 
     } catch (error) {
         res.status(500).json({error: `${error}`});
@@ -54,7 +54,7 @@ authRouter.post('/api/signin', async (req, res) => {
         const user = await User.findOne({email});
         if(!user){
             return res.status(400).json({
-                message: "User not found"
+                error: "User not found"
             });
         }
 
@@ -64,12 +64,12 @@ authRouter.post('/api/signin', async (req, res) => {
             const token = jwt.sign({id: user._id}, "myjsonwebtokenreturned");
             res.status(200).json({token, ...user._doc});
         }else{
-            res.status(401).json({message: "Incorrect password"});
+            res.status(401).json({error: "Incorrect email or password"});
         }
 
 
     } catch (error) {
-        res.status(500).json({message: `${error}`});
+        res.status(500).json({error: `${error}`});
     }
 });
 

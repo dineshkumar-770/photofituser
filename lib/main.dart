@@ -4,22 +4,18 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:photo_fit_user/config/responsive/size_config.dart';
 import 'package:photo_fit_user/config/utils/helper_validation.dart';
-import 'package:photo_fit_user/config/utils/shared_prefs.dart';
 import 'package:photo_fit_user/constants/app_color.dart';
-import 'package:photo_fit_user/constants/image_path.dart';
-import 'package:photo_fit_user/features/authentication/cubit/authentication_cubit.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:photo_fit_user/features/authentication/screens/login_screen.dart';
-import 'package:photo_fit_user/features/authentication/screens/register_screen.dart';
 import 'package:photo_fit_user/features/navigation_bar/cubit/navigation_bar_cubit.dart';
 import 'package:photo_fit_user/features/user_details/cubit/user_details_cubit.dart';
 import 'package:photo_fit_user/generated/firebase_options.dart';
 import 'package:photo_fit_user/routes/named_routes.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  runApp(const MyApp());
+  runApp( const ProviderScope(child: MyApp()));
 }
 
 class MyApp extends StatefulWidget {
@@ -44,10 +40,6 @@ class _MyAppState extends State<MyApp> {
                 SizeConfig().init(constraints, orientation);
                 return MultiBlocProvider(
                   providers: [
-                    BlocProvider(
-                      create: (context) => AuthenticationCubit(),
-                      child: Container(),
-                    ),
                     BlocProvider(
                       create: (context) => NavigationBarCubit(),
                       child: Container(),

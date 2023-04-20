@@ -7,9 +7,6 @@ import 'package:photo_fit_user/constants/app_color.dart';
 import 'package:photo_fit_user/constants/app_text_style.dart';
 import 'package:photo_fit_user/constants/image_path.dart';
 import 'package:photo_fit_user/features/Home/widgets/slider_showcase.dart';
-import 'package:photo_fit_user/features/authentication/cubit/authentication_cubit.dart';
-import 'package:photo_fit_user/features/navigation_bar/cubit/navigation_bar_cubit.dart';
-import 'package:photo_fit_user/routes/named_routes.dart';
 import 'package:photo_fit_user/sample_screen.dart';
 
 class HomePage extends StatefulWidget {
@@ -22,12 +19,9 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   final GlobalKey<ScaffoldState> _key = GlobalKey();
 
-  late AuthenticationCubit authenticationCubit;
-
   @override
   void initState() {
     super.initState();
-    authenticationCubit = BlocProvider.of(context);
   }
 
   @override
@@ -51,29 +45,6 @@ class _HomePageState extends State<HomePage> {
           width: 300 * SizeConfig.widthMultiplier!,
           child: Column(
             children: [
-              BlocConsumer<AuthenticationCubit, AuthenticationState>(
-                listener: (context, state) {
-                  if (state is SignOutSuccessfullyState) {
-                    Navigator.pushReplacementNamed(
-                        context, RoutesName.loginscreen);
-                  }
-                  if (state is SignOutFailedState) {
-                    Toast.showToast(state.errMsg);
-                  }
-                },
-                builder: (context, state) {
-                  if (state is SignOutLoadingState) {
-                    return const CustomLoader();
-                  }
-                  return ListTile(
-                    leading: const Icon(Icons.logout_outlined),
-                    title: const Text('Sign Out'),
-                    onTap: () {
-                      authenticationCubit.userSignOut();
-                    },
-                  );
-                },
-              )
             ],
           ),
         ),
